@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<main class="text-right">
+    <form method="post" class="">
+        {% csrf_token %}
+        <div class="col-sm-6 mr-auto pt-10">
+            {{form.as_p}}
+        </div>
+        <div class="col-sm-6 mr-auto pt-10">
+            <button type="submit" class="w-20 btn btn-lg btn-primary">Вход</button>
+        </div>
+    </form>
+</main>
+{% endblock %}

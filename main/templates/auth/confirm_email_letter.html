@@ -1,0 +1,4 @@
+{% autoescape off %}
+Привет {{user.username}} ваша ссылка для подтверждения аккаунта:
+http://{{ domain }}{% url 'confirm_email' uid64=uid token=token %}
+{% endautoescape %}

@@ -1,0 +1,36 @@
+{%extends 'base.html' %}
+
+{% block content %}
+
+<div class="list-group">
+    {%if profile%}
+    <h2 class="list-group-item list-group-item-action">{{profile.first_name}}</h2>
+    <h2 class="list-group-item list-group-item-action">{{profile.last_name}}</h2>
+    <h2 class="list-group-item list-group-item-action">{{profile.email}}</h2>
+    <h2 class="list-group-item list-group-item-action">{{profile.description}}</h2>
+    <h2 class="list-group-item list-group-item-action">{{profile.gender.name}}</h2>
+    <h2 class="list-group-item list-group-item-action">{{profile.status.name}}</h2>
+    <h2 class="list-group-item list-group-item-action">{{profile.slug}}</h2>
+    <h2 class="list-group-item list-group-item-action">С нами уже:{{profile.user.date_joined|timesince}}</h2>
+    {%if profile.tag.all%}
+    <div class="list-group">
+        {%for i in profile.tag.all%}
+        <h4 class="list-group-item list-group-item-action">{{i}}</h4>
+        {%endfor%}
+    </div>
+
+    {%endif%}
+    {%endif%}
+</div>
+{% if profile.user == request.user%}
+{% if profile.vk_url != 'None'%}
+<p><a href="https://vk.com/id{{profile.vk_url}}/" class="btn btn-primary btn-block">{{profile.vk_url}}</a></p>
+<p><a href="{% url 'vkdelete'%}" class="btn btn-primary btn-block">Отвязать ВК</a></p>
+{%else%}
+<p><a href="{% url 'vk_auth'%}" class="btn btn-primary btn-block">Привязать ВК</a></p>
+{%endif%}
+<p><a href="#" class="btn btn-primary btn-block">{{profile.views}}</a></p>
+<p><a href="{% url 'editprofile' %}" class="btn btn-primary btn-block">Изменить профиль</a></p>
+<p><a href="{% url 'changepassword' %}" class="btn btn-primary btn-block">Изменить пароль</a></p>
+{%endif%}
+{% endblock %}

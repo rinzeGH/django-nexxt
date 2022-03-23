@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<form method="post" action="{% url 'createprofile' %}">
+    {% csrf_token %}
+    {%for i in form%}
+    <p>
+    <p>{{i.label}}:</p>{{i}}</p>
+    <p>{{i.errors}}</p>
+    {%endfor%}
+    <button type="submit">Сохранить</button>
+</form>
+{% endblock %}

@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{%block content%}
+
+<main class="text-left">
+    <form method="post" class="">
+        {% csrf_token %}
+        <div class="col-sm-2 mr-auto pt-10">
+            {{form.as_p}}
+        </div>
+        <div class="col-sm-2 mr-auto pt-10">
+            <button type="submit" class="w-20 btn btn-sm btn-primary">Применить</button>
+        </div>
+    </form>
+</main>
+
+<div class="col-sm-1">
+    {% for i in page_obj %}
+    <div class="card" style="width: 18rem;">
+        <img src={{i.photo}}" class="card-img-top" alt="...">
+        <div class="card-body">
+            <h4 class="card-title">{{i.first_name}} {{i.last_name}}</h4>
+            <p class="card-text">{{i.description}}</p>
+            {%for j in i.tag.all%}
+                <p class="card-footer">{{j}}</p>
+            {% endfor %}
+            <a href="{{i.get_absolute_url}}" class="btn btn-primary">Перейти</a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+<div class="pagination">
+    <span class="step-links">
+        {% if page_obj.has_previous %}
+            <a href="?page=1">&laquo; first</a>
+            <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+        </span>
+
+        {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}">next</a>
+        <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+        {% endif %}
+    </span>
+</div>
+
+
+{%endblock%}

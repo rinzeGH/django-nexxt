@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-center my-5">
+            {% if request.user.is_authenticated%}
+            {% if request.user.profile%}
+            <button type="button" onclick="window.location.href = '{%url 'choose' %}'" class="btn btn-primary btn-lg">
+                НАЧАТЬ
+            </button>
+            {%else%}
+            <button type="button" onclick="window.location.href = '{%url 'createprofile' %}'"
+                    class="btn btn-primary btn-lg">Заполнить профиль
+            </button>
+            {%endif%}
+            {%endif%}
+
+        </div>
+
+    </div>
+</div>
+
+
+{% endblock %}
