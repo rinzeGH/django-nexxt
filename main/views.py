@@ -13,7 +13,7 @@ from django.views.generic import DetailView, CreateView, TemplateView, UpdateVie
 from .models import *
 from .forms import *
 from django.core.paginator import Paginator
-from .utils import send_email_for_verify
+from .utils import send_email_for_verify, vk_autentification
 from rest_framework import generics
 from rest_framework.views import APIView
 from .serializers import UserApiViewSerial
@@ -27,6 +27,16 @@ from django.contrib.messages.views import SuccessMessageMixin
 class Home(TemplateView, SuccessMessageMixin):
     template_name = 'home.html'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.request.user
+        context['user'] = user
+        try:
+            context['profile'] = Profile.objects.get(user=user)
+        except:
+            context['profile'] = None
+        return context
+
 
 def Login(request):
     if request.method == 'POST':
@@ -37,7 +47,7 @@ def Login(request):
                 login(request, user)
                 return redirect('home')
             else:
-                send_email_for_verify(request, user,is_password=False)
+                send_email_for_verify(request, user, is_password=False)
                 return render(request, 'auth/email_verify.html')
 
     form = LoginForm(request)
@@ -101,30 +111,31 @@ def Logout(request):
     return redirect('home')
 
 
-class ProfileView(LoginRequiredMixin, DetailView):
+class ProfileView(LoginRequiredMixin, TemplateView):
     model = Profile
     template_name = 'profile/profile.html'
-    slug_url_kwarg = 'prof_slug'
-    context_object_name = 'profile'
 
-    def get_object(self, queryset=None):
-        slug = self.kwargs.get(self.slug_url_kwarg, None)
-        return Profile.objects.select_related('gender', 'status').get(slug=slug)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         current_user = self.request.user
+        context['user'] = current_user
         current_user_profile = Profile.objects.get(user=current_user)
-        profile_user = Profile.objects.prefetch_related('user').get(slug=self.kwargs['prof_slug'])
-        if current_user == profile_user.user:
+        context['current_profile'] = current_user_profile
+        profile = Profile.objects\
+            .select_related('gender', 'status')\
+            .prefetch_related('user')\
+            .get(slug=self.kwargs['prof_slug'])
+        context['profile'] = profile
+        if current_user == profile.user:
             return context
         else:
-            if (ProfileViews.objects.filter(username=current_user.username, profiles=profile_user)):
+            if (ProfileViews.objects.filter(username=current_user.username, profiles=profile)):
                 return context
             else:
-                ProfileViews.objects.create(username=current_user.username, profiles=profile_user)
-                profile_user.views = profile_user.views + 1
-                profile_user.save()
+                ProfileViews.objects.create(username=current_user.username, profiles=profile)
+                profile.views = profile.views + 1
+                profile.save()
                 return context
 
 
@@ -146,7 +157,12 @@ def Choose(request):
         form = FilterForm
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
-    context = {'profiles': profiles, 'form': form, 'page_obj': page_obj}
+    context = {
+        'profiles': profiles,
+        'form': form,
+        'page_obj': page_obj,
+        'user': user,
+    }
     return render(request, 'choose.html', context)
 
 
@@ -173,11 +189,7 @@ def VkAuth(request):
 
 
 def VkAuthConfirm(request):
-    apikey = request.GET.get('code', '')
-    apiurl = f'https://oauth.vk.com/access_token?client_id={settings.SOCIAL_AUTH_VK_OAUTH2_KEY}' \
-             f'&client_secret={settings.SOCIAL_AUTH_VK_OAUTH2_SECRET}' \
-             f'&redirect_uri={settings.SOCIAL_AUTH_VK_REDIRECT_URL}&code={apikey}'
-    respones = requests.get(apiurl).json()
+    respones = vk_autentification(request)
     if 'error' in respones:
         return redirect('home')
     else:

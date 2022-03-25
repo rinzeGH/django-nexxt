@@ -1,5 +1,9 @@
 {% extends 'base.html' %}
 
+{% block user_buttons %}
+{% navbar_user_buttons request user%}
+{% endblock %}
+
 {% block content %}
 <main class="text-right">
     <form method="post" class="">

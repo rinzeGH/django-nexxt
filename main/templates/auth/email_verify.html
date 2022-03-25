@@ -1,4 +1,9 @@
 {% extends 'base.html' %}
+
+{% block user_buttons %}
+{% navbar_user_buttons request user%}
+{% endblock %}
+
 {%block content%}
 <h1>Уважаемый {{user.username}}, следуйте инструкции на почте:{{user.email}}</h1>
 {%endblock%}

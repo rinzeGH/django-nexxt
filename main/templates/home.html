@@ -1,27 +1,26 @@
 {% extends 'base.html' %}
+{% load tags%}
 
+{% block user_buttons %}
+{% navbar_user_buttons request user profile%}
+{% endblock %}
 
 {% block content %}
-
 <div class="container">
     <div class="row">
         <div class="col-md-center my-5">
-            {% if request.user.is_authenticated%}
-            {% if request.user.profile%}
+            {% if user.is_authenticated %}
+            {% if profile %}
             <button type="button" onclick="window.location.href = '{%url 'choose' %}'" class="btn btn-primary btn-lg">
                 НАЧАТЬ
             </button>
-            {%else%}
+            {% else %}
             <button type="button" onclick="window.location.href = '{%url 'createprofile' %}'"
                     class="btn btn-primary btn-lg">Заполнить профиль
             </button>
-            {%endif%}
-            {%endif%}
-
+            {% endif %}
+            {% endif %}
         </div>
-
     </div>
 </div>
-
-
 {% endblock %}

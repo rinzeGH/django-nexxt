@@ -1,4 +1,10 @@
 {% extends 'base.html' %}
+{%load tags%}
+
+{% block user_buttons %}
+{% navbar_user_buttons request user%}
+{% endblock %}
+
 {%block content%}
 
 <main class="text-left">

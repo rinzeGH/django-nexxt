@@ -1,4 +1,10 @@
 {%extends 'base.html' %}
+{% load tags %}
+
+{% block user_buttons%}
+    {%navbar_user_buttons request user current_profile%}
+{% endblock %}
+
 
 {% block content %}
 
@@ -11,8 +17,8 @@
     <h2 class="list-group-item list-group-item-action">{{profile.gender.name}}</h2>
     <h2 class="list-group-item list-group-item-action">{{profile.status.name}}</h2>
     <h2 class="list-group-item list-group-item-action">{{profile.slug}}</h2>
-    <h2 class="list-group-item list-group-item-action">С нами уже:{{profile.user.date_joined|timesince}}</h2>
-    {%if profile.tag.all%}
+    <h2 class="list-group-item list-group-item-action">С нами уже:{{user.date_joined|timesince}}</h2>
+    {%if profile.tag %}
     <div class="list-group">
         {%for i in profile.tag.all%}
         <h4 class="list-group-item list-group-item-action">{{i}}</h4>
@@ -22,7 +28,7 @@
     {%endif%}
     {%endif%}
 </div>
-{% if profile.user == request.user%}
+{% if profile.user == user%}
 {% if profile.vk_url != 'None'%}
 <p><a href="https://vk.com/id{{profile.vk_url}}/" class="btn btn-primary btn-block">{{profile.vk_url}}</a></p>
 <p><a href="{% url 'vkdelete'%}" class="btn btn-primary btn-block">Отвязать ВК</a></p>
