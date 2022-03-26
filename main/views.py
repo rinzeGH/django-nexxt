@@ -13,6 +13,8 @@ from django.views.generic import DetailView, CreateView, TemplateView, UpdateVie
 from .models import *
 from .forms import *
 from django.core.paginator import Paginator
+
+from .permissions import HaveProfileMixin
 from .utils import send_email_for_verify, vk_autentification
 from rest_framework import generics
 from rest_framework.views import APIView
@@ -111,7 +113,7 @@ def Logout(request):
     return redirect('home')
 
 
-class ProfileView(LoginRequiredMixin, TemplateView):
+class ProfileView(LoginRequiredMixin, HaveProfileMixin, TemplateView):
     model = Profile
     template_name = 'profile/profile.html'
 
